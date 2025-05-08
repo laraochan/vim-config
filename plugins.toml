@@ -77,14 +77,37 @@ repo = 'mattn/vim-lsp-settings'
 [[plugins]]
 repo = 'Shougo/ddu.vim'
 hook_add = '''
+autocmd FileType ddu-ff call s:ddu_ff_settings()
+function! s:ddu_ff_settings() abort
+	nnoremap <buffer><silent> <CR>
+		\	<Cmd>call ddu#ui#do_action('itemAction')<CR>
+  nnoremap <buffer> o
+    \ <Cmd>call ddu#ui#do_action('expandItem',
+    \ {'mode': 'toggle'})<CR>
+	nnoremap <buffer><silent> q
+		\	<Cmd>call ddu#ui#do_action('quit')<CR>
+	nnoremap <buffer> n
+		\ <Cmd>call ddu#ui#do_action('itemAction', {'name': 'newFile'})<CR>
+	nnoremap <buffer> r
+		\ <Cmd>call ddu#ui#do_action('itemAction', {'name': 'rename'})<CR>
+	nnoremap <buffer> d
+		\	<Cmd>call ddu#ui#do_action('itemAction', {'name': 'delete'})<CR>
+	nnoremap <buffer> m
+		\	<Cmd>call ddu#ui#do_action('itemAction', {'name': 'move'})<CR>
+endfunction
+
 call ddu#custom#alias('default', 'column', 'icon_filename_for_ff', 'icon_filename')
 call ddu#custom#patch_global({
-	\ 'ui': 'filer',
+	\ 'ui': 'ff',
 	\ 'sources': [{'name': 'file'}],
 	\ 'sourceOptions': {
 	\		'_': {
+	\			'matchers': [
+	\				'matcher_hidden',
+	\			],
 	\			'sorters': [
 	\				'sorter_alpha',
+	\				'sorter_treefirst',
 	\			],
 	\		},
 	\		'file': {
@@ -106,25 +129,10 @@ call ddu#custom#patch_global({
 	\			'pathDisplayOption': 'relative',
 	\		},
 	\	},
-	\ 'uiParams': {
-	\		'filer': {
-	\			'split': 'vertical',
-	\		},
-	\	},
 	\ 'kindOptions': {
 	\   'file': {
 	\     'defaultAction': 'open',
 	\ }}})
-autocmd FileType ddu-filer call s:ddu_filer_settings()
-function! s:ddu_filer_settings() abort
-  nnoremap <buffer><silent> <CR>
-		\ <Cmd>call ddu#ui#do_action('itemAction')<CR>
-  nnoremap <buffer> o
-    \ <Cmd>call ddu#ui#do_action('expandItem',
-    \ {'mode': 'toggle'})<CR>
-  nnoremap <buffer><silent> q
-    \ <Cmd>call ddu#ui#do_action('quit')<CR>
-endfunction
 nnoremap <leader>fe <Cmd>call ddu#start({'name': 'ddu-filer'})<CR>
 
 call ddu#custom#patch_local('ddu-buffer', {
@@ -132,20 +140,20 @@ call ddu#custom#patch_local('ddu-buffer', {
 	\	'sources': [{'name': 'buffer'}],
 	\ 'sourceOptions': {
 	\   '_': {
-	\     'columns': ['icon_filename'],
+	\     'columns': [
+	\				{
+	\					'name': 'icon_filename',
+	\					'params': {
+	\						'pathDisplayOption': 'relative',
+	\					},
+	\				},
+	\			],
 	\   },
 	\ },
 	\ 'kindOptions': {
 	\   'file': {
 	\     'defaultAction': 'open',
 	\ }}})
-autocmd FileType ddu-ff call s:ddu_buffer_settings()
-function! s:ddu_buffer_settings() abort
-	nnoremap <buffer><silent> <CR>
-		\	<Cmd>call ddu#ui#do_action('itemAction')<CR>
-	nnoremap <buffer><silent> q
-		\	<Cmd>call ddu#ui#do_action('quit')<CR>
-endfunction
 nnoremap <leader>fb <Cmd>call ddu#start({'name': 'ddu-buffer'})<CR>
 '''
 
@@ -172,3 +180,24 @@ repo = 'ryota2357/ddu-column-icon_filename'
 
 [[plugins]]
 repo = 'Shougo/ddu-filter-sorter_alpha'
+
+[[plugins]]
+repo = 'Shougo/ddu-filter-matcher_hidden'
+
+[[plugins]]
+repo = 'xecua/ddu-filter-sorter_treefirst'
+
+[[plugins]]
+repo = 'airblade/vim-gitgutter'
+hook_add = '''
+autocmd BufWritePost * GitGutter
+'''
+
+[[plugins]]
+repo = 'tpope/vim-commentary'
+
+[[plugins]]
+repo = 'voldikss/vim-floaterm'
+hook_add = '''
+nnoremap <leader><C-t> <Cmd>FloatermToggle<CR>
+'''
