@@ -94,6 +94,24 @@ function! s:ddu_ff_settings() abort
 		\	<Cmd>call ddu#ui#do_action('itemAction', {'name': 'delete'})<CR>
 	nnoremap <buffer> m
 		\	<Cmd>call ddu#ui#do_action('itemAction', {'name': 'move'})<CR>
+nnoremap <buffer> > <Cmd>call ddu#ui#do_action('updateOptions', {
+\   'sourceOptions': {
+\     'file': {
+\       'matchers': ToggleHidden(),
+\     },
+\     'file_rec': {
+\       'matchers': ToggleHidden(),
+\     },
+\   },
+\ }) \| call ddu#redraw('refreshItems')<CR>
+endfunction
+
+function! ToggleHidden()
+  let current = ddu#custom#get_current(b:ddu_ui_name)
+  let source_options = get(current, 'sourceOptions', {})
+  let file_matchers = get(get(source_options, 'file', {}), 'matchers', [])
+  let rec_matchers = get(get(source_options, 'file_rec', {}), 'matchers', [])
+  return empty(file_matchers) && empty(rec_matchers) ? ['matcher_hidden'] : []
 endfunction
 
 call ddu#custom#alias('default', 'column', 'icon_filename_for_ff', 'icon_filename')
@@ -102,20 +120,17 @@ call ddu#custom#patch_global({
 	\ 'sources': [{'name': 'file'}],
 	\ 'sourceOptions': {
 	\		'_': {
-	\			'matchers': [
-	\				'matcher_hidden',
-	\			],
 	\			'sorters': [
 	\				'sorter_alpha',
 	\				'sorter_treefirst',
 	\			],
 	\		},
 	\		'file': {
-	\			'columns': ['icon_filename'],
+	\			'columns': ['icon_filename']
 	\		},
 	\		'file_rec': {
-	\			'columns': ['icon_filename_for_ff'],
-	\		},
+	\			'columns': ['icon_filename_for_ff']
+	\		}
 	\	},
 	\	'columnParams': {
 	\		'icon_filename': {
